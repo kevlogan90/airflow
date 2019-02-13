@@ -3019,12 +3019,18 @@ class DAG(BaseDag, LoggingMixin):
             )
 
         self.schedule_interval = schedule_interval
-        if isinstance(schedule_interval, Hashable) and schedule_interval in cron_presets:
-            self._schedule_interval = cron_presets.get(schedule_interval)
-        elif schedule_interval == '@once':
-            self._schedule_interval = None
+        schedule_intervals = []
+        if not isinstance(schedule_interval, list):
+            schedule_interval = [schedule_interval]
+        for interval in schedule_interval:
+            if isinstance(interval, Hashable) and interval in cron_presets:
+                schedule_intervals.append(cron_presets.get(interval))
+            elif interval != '@once':
+                schedule_intervals.append(schedule_interval)
+        if len(schedule_intervals) <= 1:
+            self._schedule_interval = next(iter(a), None)
         else:
-            self._schedule_interval = schedule_interval
+            self._schedule_interval = schedule_intervals
         if isinstance(template_searchpath, six.string_types):
             template_searchpath = [template_searchpath]
         self.template_searchpath = template_searchpath

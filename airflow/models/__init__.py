@@ -3028,7 +3028,7 @@ class DAG(BaseDag, LoggingMixin):
             elif interval != '@once':
                 schedule_intervals.append(schedule_interval)
         if len(schedule_intervals) <= 1:
-            self._schedule_interval = next(iter(a), None)
+            self._schedule_interval = next(iter(schedule_intervals), None)
         else:
             self._schedule_interval = schedule_intervals
         if isinstance(template_searchpath, six.string_types):
